@@ -24,10 +24,14 @@ public class Main {
                 .map(p -> new Person(p.getName() + "_new", p.getAge() + 1))
                 .collect(toMap(p -> p.getName(), p -> p));
 
+        System.out.println(map1.toString());
+
         //.filter(p -> p.getName().startsWith("S"))
         Map<String, Person> map2 = Streams.of(persons)
                 .filter(p -> p.getAge() > 0)
                 .transform(p -> new Person(p.getName() + "_new", p.getAge() + 1))
                 .toMap(p -> p.getName(), p -> p);
+
+        System.out.println(map2.toString());
     }
 }

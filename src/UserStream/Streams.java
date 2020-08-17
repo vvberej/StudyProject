@@ -1,45 +1,48 @@
 package UserStream;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Streams<T> {
-    private Collection<T> collection;
-    private Iterator<T> iterator;
+    private List<T> collection;
 
-    public static <T> Streams<T> of(Collection<T> collection) {
+    public static <T> Streams<T> of(List<T> collection) {
         return new Streams<T>(collection);
     }
 
-    public Streams(Collection<T> collection) {
+    public Streams(List<T> collection) {
         this.collection = collection;
-        this.iterator = collection.iterator();
     }
 
     public Streams<T> filter(Predicate<? super T> predicate) {
-        while (iterator.hasNext()) {
-            if(predicate.test(iterator.next()))
-                break;
+        for (Iterator<T> i = collection.iterator(); i.hasNext(); ) {
+            T item = i.next();
+            if (!predicate.test(item)) {
+                i.remove();
+            }
         }
         return this;
     }
 
-    public <R> Streams<R> transform(Function<? super T, ? extends R> transformer) {
-        /*while (iterator.hasNext()) {
-            if(iterator.)
-                break;
-        }*/
-        //transformer.
+    public Streams<T> transform(Function<? super T, ? extends T> transformFun) {
+        for (ListIterator<T> i = collection.listIterator(); i.hasNext(); ) {
+            T transformedItem = transformFun.apply(i.next());
+            i.set(transformedItem);
+        }
 
-        //return new Streams<T>(collection);
-        return null;
+        return this;
     }
 
-    public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+    public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
+                                  Function<? super T, ? extends V> valueMapper) {
+        Map<K, V> map = new HashMap<>();
 
-        return null;
+        for (T t : collection) {
+            K key = keyMapper.apply(t);
+            V value = valueMapper.apply(t);
+            map.put(key, value);
+        }
+        return map;
     }
 }
